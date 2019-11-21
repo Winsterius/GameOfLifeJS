@@ -11,10 +11,19 @@
 }
 #buttons {
     position: absolute;
-    top: 730px;
     left: 30px;
 }
 .button{
     width: 100px;
 
+}
+#settings {
+    position: absolute;
+}
+label {
+    margin: 10px;
+}
+
+#speedRange #countOfCells {
+    margin-top: 10px;
 }
