@@ -1,6 +1,7 @@
 ﻿let size = 800;
 let sizeOfCell = 20;
-let countOfRandomCells = document.getElementById("countOfCells").value;
+let countOfRandomCells;
+let delay;
 
 let play = false;
 
@@ -12,16 +13,15 @@ canvasField.addEventListener("click", function (event) {
 
     let x = event.pageX - 32;
     let y = event.pageY - 102;
-
     drawCell(x, y);
 
 });
 
 document.getElementById("randomButton").addEventListener("click", function () {
-    drawField(size + 2);
+    drawField(document.getElementById("sizeRange").value);
     drawRandomCells();
 });
-document.getElementById("clearButton").addEventListener("click",  () => drawField(size + 2) );
+document.getElementById("clearButton").addEventListener("click", () => drawField(document.getElementById("sizeRange").value) );
 document.getElementById("stepButton").addEventListener("click", () => makeStep());
 
 document.getElementById("startButton").addEventListener("click",  function () {
@@ -34,18 +34,39 @@ document.getElementById("stopButton").addEventListener("click", () => stopGame()
 
 document.getElementById("saveButton").addEventListener("click", () => saveGame());
 document.getElementById("loadButton").addEventListener("click", () => loadGame());
-//document.getElementById("countOfCells").addEventListener("change", function () {
-//    document.getElementById("countOfCellsLabel").innerHTML = "Count: " + countOfRandomCells
-//}, false);
+document.getElementById("countOfCells").addEventListener("input", function () {
+    countOfRandomCells = document.getElementById("countOfCells").value;
+    document.getElementById("countOfCellsLabel").innerHTML = "Count: " + countOfRandomCells
+});
+document.getElementById("speedRange").addEventListener("input", function () {
+    delay = document.getElementById("speedRange").value * document.getElementById("speedRange").value * 0.005;
+    document.getElementById("speedRangeLabel").innerHTML = "Delay: " + Math.round(delay) + "ms";
 
+});
+document.getElementById("sizeRange").addEventListener("change", function () {
+    size = document.getElementById("sizeRange").value;
+    console.log(size);
+    drawField(size);
+});
+document.getElementById("sizeCellRange").addEventListener("change", function () {
+    sizeOfCell = document.getElementById("sizeCellRange").value;
+    console.log(sizeOfCell)
+    drawField(size);
+});
 function drawField(x) {
 
-    //document.getElementById("countOfCellsLabel").innerHTML = "Count: " + countOfRandomCells;
+    
+    countOfRandomCells = document.getElementById("countOfCells").value;
+    document.getElementById("countOfCellsLabel").innerHTML = "Count: " + countOfRandomCells;
+    delay = document.getElementById("speedRange").value * document.getElementById("speedRange").value * 0.005;
+    document.getElementById("speedRangeLabel").innerHTML = "Delay: " + Math.round(delay) + "ms";
 
-    document.getElementById("buttons").style.top = 130 + x + "px";
-    document.getElementById("buttons").style.width = x + "px";
-    document.getElementById("settings").style.left = 50 + x + "px";
-    document.getElementById("settings").style.top = 160 + "px";
+    delay = document.getElementById("speedRange").value * document.getElementById("speedRange").value * 0.005;
+
+    document.getElementById("buttons").style.top = 150 + +x + "px";
+    document.getElementById("buttons").style.width = +x + "px";
+    document.getElementById("settings").style.left = +x + 70 + "px";
+    document.getElementById("settings").style.top = 180 + "px";
 
 
     let count = Math.round(x / sizeOfCell);
@@ -57,15 +78,17 @@ function drawField(x) {
         cells[i]  = true;
         
     }
-    canvasField.width = x;
-    canvasField.height = x;
+    canvasField.width = +x + +sizeOfCell + 2;
+    canvasField.height = +x + +sizeOfCell + 2;
     ctx.fillStyle = "#808080";
-
-    for (let j = 1; j < x; j += sizeOfCell) {
+    xn = +x + +sizeOfCell - x % sizeOfCell + 2;
+    //x = +x + +sizeOfCell + 2;
+    console.log("x: ", +x + +sizeOfCell, "cell", sizeOfCell);
+    for (let j = 1; j < +x + +sizeOfCell + 5; j += +sizeOfCell) {
         ctx.moveTo(j, 0);
-        ctx.lineTo(j, x);
+        ctx.lineTo(j, xn);
         ctx.moveTo(0, j);
-        ctx.lineTo(x, j);
+        ctx.lineTo(xn, j);
     }
     ctx.stroke(); 
 }
@@ -96,8 +119,6 @@ function drawCell(x, y) {
 function drawRandomCells() {
 
     let count = countOfRandomCells;
-
-    
 
     for (let i = 0; i < count; i++) {
         
@@ -143,7 +164,8 @@ function makeStep() {
 
 
 function startGame() {
-    let ms = document.getElementById("speedRange").value * document.getElementById("speedRange").value * 0.005 ;
+    let ms = delay;
+
     setTimeout(function () {    
         makeStep();          
         if (play) {            
@@ -207,10 +229,6 @@ function getCountOfNeighbours(cell) {
     return count;
 }
 
-const delay = ms => {
-    setTimeout(() => console.log("a"), ms);
-}
-
 function saveGame() {
     if (typeof Storage !== "undefined") {
         localStorage.setItem("game", JSON.stringify(cells));
@@ -239,4 +257,4 @@ function loadGame() {
     }
 }
 
-drawField(size + 2);
+drawField(size);
